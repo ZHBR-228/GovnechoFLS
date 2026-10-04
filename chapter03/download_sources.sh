@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # GovnechoFLS Chapter 3 — скачивание исходников + патчи + проверка контрольных сумм
 set -euo pipefail
-source "$(dirname "$0")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
 
 log "Chapter 3: загрузка пакетов LFS-BOOK $BOOK_VERSION"
 mkdir -p "$GFLS_CACHE"

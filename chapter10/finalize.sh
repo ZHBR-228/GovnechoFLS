@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # GovnechoFLS Chapter 10 — финализация: чистка /tools, сжатие rootfs, live-ISO
 set -euo pipefail
-source "$(dirname "$0")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
 
 log "[10.1] удаление временных файлов и toolchain"
 rm -rf /build/* /sources/* 2>/dev/null || true

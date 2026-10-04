@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # GovnechoFLS Chapter 9 — системные пакеты из BLFS: GNOME-ядро + наши утилиты
 set -euo pipefail
-source "$(dirname "$0")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
 
 JOBS=$(nproc); BLD=$GOVERNCH_BLD
 pkg_dir() { local d="$BLD/$1-$2"; [[ -d $d ]] || unpack_pkg "$1" "$2" >/dev/null; echo "$d"; }
@@ -19,6 +19,51 @@ for pair in "expat 2.6.3" "dbus 1.15.8" "glib 2.80.4" "atk 2.38.0" \
             "wayland 1.22.0" "libxkbcommon 1.7.0" "json-glib 1.10.2"; do
   set -- $pair; blfs_lib "$1" "$2" || warn "пропуск $1 (нужны доп.зависимости из BLFS)"
 done
+
+log "[9.y] полный GNOME-стек (BLFS 12.3): gnome-shell / mutter / gdm / gnome-session"
+for name in "${!GNOME_STACK[@]}"; do
+  blfs_lib "$name" "${GNOME_STACK[$name]}" || warn "пропуск GNOME-компонента $name"
+done
+
+log "[9.y] ряд стартовых программ GovnechoFLS: nautilus, gnome-terminal, gedit, калькулятор, монитор, firefox…"
+for name in "${!STARTUP_APPS[@]}"; do
+  blfs_lib "$name" "${STARTUP_APPS[$name]}" || warn "пропуск приложения $name"
+done
+
+log "[9.y] привязка GNOME-сессии Govnecho: wayland-сессионный файл + autostart"
+mkdir -pv /usr/share/wayland-sessions /etc/xdg/autostart
+cat > /usr/share/wayland-sessions/govnechofls-wayland.desktop <<'EOF'
+[Desktop Entry]
+Name=GovnechoFLS GNOME
+Comment=GovechoOS-flavored GNOME session (LFS edition)
+Exec=/usr/bin/gnome-session --session=govnechofls
+TryExec=gnome-session
+Type=Application
+DesktopNames=GNOME
+EOF
+# переопределение имени стандартной сессии (keyfile override, как в pkgroot)
+mkdir -pv /usr/share/gnome-session/sessions
+cat > /usr/share/gnome-session/sessions/govnechofls.session <<'EOF'
+[GNOME Session]
+Name=GovnechoFLS GNOME
+RequiredComponents=org.gnome.Shell@wayland;gdm-xsession
+EOF
+# автозапуск фирменных программ при входе (govwelcome + govstartapps)
+cat > /etc/xdg/autostart/govwelcome.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=govwelcome
+Exec=/usr/local/bin/govwelcome
+X-GNOME-Autostart-enabled=true
+EOF
+cat > /etc/xdg/autostart/govstartapps.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=govstartapps
+Exec=/usr/local/bin/govctl apps start
+X-GNOME-Autostart-enabled=true
+EOF
+ok "GNOME + стартовые программы интегрированы и привязаны к сессии GovnechoFLS"
 
 log "[9.z] Govnecho-компоненты (наши C-утилиты) — всегда собираются!"
 mkdir -pv /usr/src/govnecho
@@ -38,4 +83,23 @@ alias gov='govctl'
 alias gtidy='govctl gnome tidy'
 EOF
 
-ok "Chapter 9 завершена: GNOME-библиотеки + фирменные утилиты"
+# GovnechoFLS использует SysVinit (LFS proper) — ряд стартовых программ
+# запускаем через /etc/inittab: после multi-user поднимаем getty+GDM,
+# а GNOME-приложения стартуют из XDG autostart внутри сессии.
+if [[ -f /etc/inittab ]]; then
+  grep -q 'gnome' /etc/inittab || cat >> /etc/inittab <<'EOF'
+
+# --- GovnechoFLS graphical layer (SysV-style) ---
+c1:12345:respawn:/sbin/agetty 38400 tty1 linux
+EOF
+fi
+# GDM по умолчанию (если собран): симлинк уровня запуска
+[[ -x /usr/bin/gdm ]] && mkdir -p /etc/rc5.d && \
+  ln -sfv ../init.d/gdm /etc/rc5.d/S99gdm 2>/dev/null || true
+cat > /etc/xdg/autostart/govstartapps.conf <<'EOF'
+# Ряд стартовых программ GovnechoFLS (читается govctl apps start)
+[apps]
+enabled=nautilus,gnome-terminal,gedit,gnome-calculator,gnome-system-monitor,firefox
+EOF
+
+ok "Chapter 9 завершена: GNOME-стек + ряд стартовых программ + фирменные утилиты"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # GovnechoFLS Chapter 8 — ядро govecho + загрузчик GRUB
 set -euo pipefail
-source "$(dirname "$0")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
 
 KV="$KERNEL_VERSION"; KNAME="$KERNEL_NAME"
 SRC=$GOVERNCH_SRC; BLD=$GOVERNCH_BLD

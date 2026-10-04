@@ -21,7 +21,9 @@ chapter05/               кросс-тулчейн pass 1 внутри chroot
 chapter06/               базовая система (~35 пакетов из исходников)
 chapter07/               /etc: passwd, profile, fstab, баннер, скрипты SysV
 chapter08/               ядро govecho-6.9.8 + GRUB
-chapter09/               BLFS: библиотеки для GNOME + наши C-утилиты
+chapter09/               BLFS: ПОЛНЫЙ GNOME (shell/mutter/gdm) + ряд стартовых
+                           программ (nautilus,terminal,gedit,calc,monitor,firefox)
+                           + наши C-утилиты
 chapter10/               чистка /tools, ext4-образ, live ISO
 src/                     govecho.c govinit.c govwelcome.c govctl.c …
 scripts/lib.sh           утилиты (fetch/checksum/unpack)

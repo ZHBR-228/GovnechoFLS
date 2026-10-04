@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # GovnechoFLS Chapter 7 — настройка системы (etc-файлы, скрипты SysV init)
 set -euo pipefail
-source "$(dirname "$0")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
 
 log "[7.2] /etc/inputrc"
 cat > /etc/inputrc <<'EOF'

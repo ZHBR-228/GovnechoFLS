@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # GovnechoFLS Chapter 6 — базовая система из исходников (LFS-BOOK 12.3)
 set -euo pipefail
-source "$(dirname "$0")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
 
 SRC=$GOVERNCH_SRC; BLD=$GOVERNCH_BLD
 JOBS=$(nproc)

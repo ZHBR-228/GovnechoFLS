@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # GovnechoFLS Chapter 5 — LFS toolchain pass 1 (кросс-компилятор из исходников)
 set -euo pipefail
-source "$(dirname "$0")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
 
 LFS_TGT="${LFS_TGT:-$(uname -m)-lfs-linux-gnu}"
 TOOLS=/tools
