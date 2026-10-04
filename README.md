@@ -25,12 +25,22 @@ chapter09/               BLFS: ПОЛНЫЙ GNOME (shell/mutter/gdm) + ряд с
                            программ (nautilus,terminal,gedit,calc,monitor,firefox)
                            + наши C-утилиты
 chapter10/               чистка /tools, ext4-образ, live ISO
-src/                     govecho.c govinit.c govwelcome.c govctl.c …
+src/                     govecho.c govinit.c govwelcome.c govctl.c gosh.c …
 scripts/lib.sh           утилиты (fetch/checksum/unpack)
 scripts/chroot_enter.sh  вход в chroot (гл. 4–9)
 tests/                   unit-тесты (./tests/test_host_checks.sh)
 build_all.sh             мастер: все главы по порядку
 ```
+
+## 🖥 gosh — фирменная оболочка с заставкой (neofetch)
+
+`gosh` (Govnecho Shell, `src/gosh.c`) — интерактивная шелл-оболочка GovnechoFLS:
+- промпт `(govnechoFLS) user@host:pwd$`, история со стрелками ↑↓ (`~/.gosh_history`)
+- встроенные команды: `help fetch/neofetch ver pwd cd echo clear history alias which uname ls exit`
+- внешние команды через fork/execvp; алиасы по умолчанию (`ll`, `gs`, `gd`)
+- **заставка**: команда `fetch` рисует ASCII-логотип GOVECHO + OS/Kernel/CPU/RAM/Disk/Uptime/DE и палитру — как neofetch, только наше и на C
+- после сборки гл.9 gosh регистрируется в `/etc/shells` и становится shell для root
+- быстрый просмотр заставки без входа: `gosh -f`; версия: `gosh -v`; разовая команда: `gosh -e "ls src"`
 
 ## Сборка (на чистой Debian/Ubuntu/Fedora машине, ≥8 ГБ диска, root)
 ```bash

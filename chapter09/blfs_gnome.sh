@@ -69,12 +69,24 @@ log "[9.z] Govnecho-компоненты (наши C-утилиты) — все�
 mkdir -pv /usr/src/govnecho
 cp -r "$GFLS_ROOT/src/"* /usr/src/govnecho/ 2>/dev/null || true
 cd /usr/src/govnecho
-for u in govecho govinit govwelcome govctl govechoos-release; do
+for u in govecho govinit govwelcome govctl govechoos-release gosh; do
   if [[ -f $u.c ]]; then
     gcc -O2 -static -Wall -o /usr/local/bin/$u $u.c && ok "собран $u"
   fi
 done
 [[ -f govinit.c ]] && ln -sfv /usr/local/bin/govinit /sbin/govinit
+# gosh — фирменная оболочка + заставка neofetch: регистрируем как shell,
+# делаем root-оболочкой по умолчанию и добавляем алиасы/автозапуск fetch
+if [[ -x /usr/local/bin/gosh ]]; then
+  grep -q '/usr/local/bin/gosh' /etc/shells || echo '/usr/local/bin/gosh' >> /etc/shells
+  sed -i 's|^root:\(.*\):/bin/bash$|root:\1:/usr/local/bin/gosh|' /etc/passwd 2>/dev/null || true
+  cat > /etc/profile.d/gosh.sh <<'GOSHEOF'
+alias fetch='/usr/local/bin/gosh -f'
+alias gs='git status'
+alias gd='git diff'
+alias ll='ls -la'
+GOSHEOF
+fi
 
 log "[9.z] интеграция в init: govstartapps + autostart"
 cat > /etc/profile.d/govnecho.sh <<'EOF'
