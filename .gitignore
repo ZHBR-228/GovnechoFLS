@@ -3,3 +3,5 @@ build/
 *.iso
 *.img
 *.tar.gz
+build-bundle.*
+*.bundle
